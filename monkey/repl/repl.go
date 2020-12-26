@@ -1,15 +1,20 @@
 package repl
 
+// RELP Read, Eval, Print, Lopp
+
 import (
 	"bufio"
 	"fmt"
 	"io"
-	"monkey/lexer"
-	"monkey/token"
+
+	"github.com/kawa1214/go-interprinter/monkey/lexer"
+	"github.com/kawa1214/go-interprinter/monkey/token"
 )
 
+// PROMPT is
 const PROMPT = ">> "
 
+// Start ソースコードをトークナイズ，トークレンツを表示する
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
 
