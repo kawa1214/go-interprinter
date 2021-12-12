@@ -3,14 +3,14 @@ package token
 type TokenType string
 
 const (
-	ILLEGAL = "ILLEGAL"
-	EOF     = "EOF"
+	ILLEGAL = "ILLEGAL" // トークンや文字が未知
+	EOF     = "EOF"     // ファイル終端
 
-	// Identifiers + literals
+	// 識別子, リテラル
 	IDENT = "IDENT" // add, foobar, x, y, ...
 	INT   = "INT"   // 1343456
 
-	// Operators
+	// 演算子
 	ASSIGN   = "="
 	PLUS     = "+"
 	MINUS    = "-"
@@ -24,7 +24,7 @@ const (
 	EQ     = "=="
 	NOT_EQ = "!="
 
-	// Delimiters
+	// デミリタ
 	COMMA     = ","
 	SEMICOLON = ";"
 
@@ -33,7 +33,7 @@ const (
 	LBRACE = "{"
 	RBRACE = "}"
 
-	// Keywords
+	// キーワード
 	FUNCTION = "FUNCTION"
 	LET      = "LET"
 	TRUE     = "TRUE"

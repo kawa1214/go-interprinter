@@ -1,12 +1,17 @@
 package lexer
 
-import "monkey/token"
+import (
+	"github.com/kawa1214/go-interprinter/token"
+)
+
+// 字句解析
+// ソースコードを入力として受け取り、ソースコードを表現するトークン列を出力する。
 
 type Lexer struct {
-	input        string
-	position     int  // current position in input (points to current char)
-	readPosition int  // current reading position in input (after current char)
-	ch           byte // current char under examination
+	input        string // 入力における現在の位置(現在の文字を指し示す)
+	position     int    // これから読み込む位置(現在の文字の次)
+	readPosition int    // 現在検査中の文字
+	ch           byte
 }
 
 func New(input string) *Lexer {
@@ -15,10 +20,28 @@ func New(input string) *Lexer {
 	return l
 }
 
+func (l *Lexer) peekChar() byte {
+	if l.readPosition >= len(l.input) {
+		return 0
+	} else {
+		return l.input[l.readPosition]
+	}
+}
+
+func (l *Lexer) readChar() {
+	if l.readPosition >= len(l.input) {
+		l.ch = 0
+	} else {
+		l.ch = l.input[l.readPosition]
+	}
+	l.position = l.readPosition
+	l.readPosition += 1
+}
+
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 
-	l.skipWhitespace()
+	l.skipWhiteSpace()
 
 	switch l.ch {
 	case '=':
@@ -53,16 +76,16 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.GT, l.ch)
 	case ';':
 		tok = newToken(token.SEMICOLON, l.ch)
+	case '(':
+		tok = newToken(token.LPAREN, l.ch)
+	case ')':
+		tok = newToken(token.RPAREN, l.ch)
 	case ',':
 		tok = newToken(token.COMMA, l.ch)
 	case '{':
 		tok = newToken(token.LBRACE, l.ch)
 	case '}':
 		tok = newToken(token.RBRACE, l.ch)
-	case '(':
-		tok = newToken(token.LPAREN, l.ch)
-	case ')':
-		tok = newToken(token.RPAREN, l.ch)
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF
@@ -73,7 +96,7 @@ func (l *Lexer) NextToken() token.Token {
 			return tok
 		} else if isDigit(l.ch) {
 			tok.Type = token.INT
-			tok.Literal = l.readNumber()
+			tok.Literal = l.readNummber()
 			return tok
 		} else {
 			tok = newToken(token.ILLEGAL, l.ch)
@@ -84,30 +107,7 @@ func (l *Lexer) NextToken() token.Token {
 	return tok
 }
 
-func (l *Lexer) skipWhitespace() {
-	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
-		l.readChar()
-	}
-}
-
-func (l *Lexer) readChar() {
-	if l.readPosition >= len(l.input) {
-		l.ch = 0
-	} else {
-		l.ch = l.input[l.readPosition]
-	}
-	l.position = l.readPosition
-	l.readPosition += 1
-}
-
-func (l *Lexer) peekChar() byte {
-	if l.readPosition >= len(l.input) {
-		return 0
-	} else {
-		return l.input[l.readPosition]
-	}
-}
-
+// 識別子を読み、非英字に到達するまで字句解析気の位置を進め文字列を返す
 func (l *Lexer) readIdentifier() string {
 	position := l.position
 	for isLetter(l.ch) {
@@ -116,7 +116,12 @@ func (l *Lexer) readIdentifier() string {
 	return l.input[position:l.position]
 }
 
-func (l *Lexer) readNumber() string {
+// 与えられた引数化判定する。
+func isLetter(ch byte) bool {
+	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
+}
+
+func (l *Lexer) readNummber() string {
 	position := l.position
 	for isDigit(l.ch) {
 		l.readChar()
@@ -124,12 +129,15 @@ func (l *Lexer) readNumber() string {
 	return l.input[position:l.position]
 }
 
-func isLetter(ch byte) bool {
-	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
-}
-
 func isDigit(ch byte) bool {
 	return '0' <= ch && ch <= '9'
+}
+
+// 不要な文字を消す
+func (l *Lexer) skipWhiteSpace() {
+	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
+		l.readChar()
+	}
 }
 
 func newToken(tokenType token.TokenType, ch byte) token.Token {

@@ -1,11 +1,13 @@
 package repl
 
+// RELP: Read, Eval Print Loop
 import (
 	"bufio"
 	"fmt"
 	"io"
-	"monkey/lexer"
-	"monkey/token"
+
+	"github.com/kawa1214/go-interprinter/lexer"
+	"github.com/kawa1214/go-interprinter/token"
 )
 
 const PROMPT = ">> "

@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"monkey/repl"
 	"os"
 	"os/user"
+
+	"github.com/kawa1214/go-interprinter/repl"
 )
 
 func main() {
